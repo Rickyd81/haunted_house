@@ -869,12 +869,15 @@ function giveReward(id) {
 }
 
 // ===== BOSS =====
+// Quote di volo (y del bordo superiore): restano alla portata del salto del giocatore
+// Morwen si affronta senza doppio salto, quindi resta più in basso
+const FLY_Y = { 2: [140, 185], 4: [100, 170], 6: [70, 160] };
 function startBoss(id) {
   const b = BOSSES[id];
   boss = { isBoss: true, id, name: b.name, w: b.w, h: b.h, vx: 0, vy: 0, hp: b.hp, maxhp: b.hp, atk: b.atk, face: -1, t: 0, st: 'intro', stT: 1.6, flash: 0, fly: !!b.fly, ghost: !!b.ghost, def: 0, phase: 1, alpha: 1, n: 0 };
   boss.x = P.x > W / 2 ? 70 : W - 70 - b.w;
   boss.face = P.x > W / 2 ? 1 : -1;
-  boss.y = b.fly ? 90 : 240 - b.h;
+  boss.y = b.fly ? FLY_Y[id][0] + 10 : 240 - b.h;
   boss.tx = boss.x; boss.ty = boss.y;
   enemies.push(boss);
   banner = { text: b.name, t: 3.2, boss: true };
@@ -911,7 +914,8 @@ let flashScreen = 0;
 function newSpot(b) {
   let tx, tries = 0;
   do { tx = rand(40, W - 40 - b.w); } while (Math.abs(tx - P.x) < 70 && tries++ < 20);
-  b.tx = tx; b.ty = rand(36, 120);
+  const [y0, y1] = FLY_Y[b.id] || [60, 140];
+  b.tx = tx; b.ty = rand(y0, y1);
 }
 function teleport(b, total) {
   const half = total / 2;
