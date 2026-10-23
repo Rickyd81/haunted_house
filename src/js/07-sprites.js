@@ -11,23 +11,34 @@ function drawPlayer() {
   ctx.translate(Math.round(p.x + p.w / 2), Math.round(p.y) + bob);
   ctx.scale(p.face, 1);
   if (p.dashT > 0) ctx.globalAlpha = .75;
-  // mantello
-  const sway = p.onGround ? (run ? (f % 2) : 0) : (p.vy < 0 ? 2 : -1);
-  R(-6 - sway, 8, 4, 11 + (sway > 0 ? 0 : 1), '#5a0f19'); R(-7 - sway, 17, 3, 3, '#4a0a14'); R(-5, 8, 2, 2, '#7a1422');
-  // gambe
+  // Eroe: ragazzo dai capelli castani, tunica verde, faretra sulla schiena
+  const SKIN = '#e8b48a', SKD = '#c98e66', HAIR = '#3a2416', HAIRL = '#5a3a22', TUN = '#3f7a2a', TUNL = '#5a9a3a', TUND = '#2c5a1e',
+    LEA = '#7a4a24', LEAD = '#5a3418', PANT = '#26345a', PANTL = '#34467a', BOOT = '#7a4422', BOOTL = '#9a5a2a';
+  // faretra con frecce (dietro)
+  R(-8, 5, 3, 9, LEA); R(-8, 5, 3, 1, LEAD); R(-7, 6, 1, 7, '#8a5a2c');
+  R(-8, 2, 1, 3, '#cfc6b0'); R(-6, 1, 1, 4, '#cfc6b0'); R(-9, 1, 2, 2, '#8a8a90'); R(-7, 0, 2, 2, '#8a8a90');
+  // gambe e stivali
   const l1 = run ? [0, 1, 0, -1][f] : 0;
-  if (!p.onGround) { R(-3, 15, 3, 5, '#3a3a44'); R(1, 14, 3, 5, '#3a3a44'); R(-3, 19, 3, 2, '#1e1d22'); R(1, 18, 3, 2, '#1e1d22'); }
-  else { R(-3 + l1, 15, 3, 5, '#3a3a44'); R(1 - l1, 15, 3, 5, '#3a3a44'); R(-3 + l1, 20, 4, 2, '#1e1d22'); R(1 - l1, 20, 4, 2, '#1e1d22'); }
-  // busto con tabarda
-  R(-4, 8, 8, 7, '#7d8792'); R(-4, 8, 2, 7, '#9aa4b0');
-  R(-2, 9, 5, 6, '#7a1422'); R(0, 10, 1, 4, '#c9a24a'); R(-1, 11, 3, 1, '#c9a24a');
-  R(-4, 14, 8, 1, '#4a2e1a'); R(0, 14, 2, 1, '#c9a24a');
-  // elmo con pennacchio
-  R(-4, 0, 8, 8, '#8f99a4'); R(-3, 1, 2, 6, '#c3cad2'); R(-4, 7, 8, 1, '#5f6770');
-  R(0, 3, 4, 1, '#0d0b10'); R(2, 3, 1, 1, '#e8d27a'); R(1, 5, 3, 1, '#0d0b10');
-  R(-3, -2, 3, 2, '#a01e2c'); R(-5, -1, 3, 2, '#a01e2c'); R(-6, 0, 2, 3, '#8a1422');
-  // braccio
-  if (p.atkT <= 0) { R(1, 9, 3, 5, '#8b95a0'); R(2, 13, 2, 2, '#5a3a24'); }
+  if (!p.onGround) { R(-4, 16, 3, 3, PANT); R(1, 15, 3, 3, PANT); R(-4, 18, 4, 3, BOOT); R(1, 17, 4, 3, BOOT); R(-4, 18, 4, 1, BOOTL); R(1, 17, 4, 1, BOOTL); }
+  else {
+    R(-4 + l1, 16, 3, 3, PANT); R(1 - l1, 16, 3, 3, PANT); R(-4 + l1, 16, 1, 3, PANTL);
+    R(-4 + l1, 19, 4, 3, BOOT); R(1 - l1, 19, 4, 3, BOOT); R(-4 + l1, 19, 4, 1, BOOTL); R(1 - l1, 19, 4, 1, BOOTL);
+  }
+  // tunica verde con lacci
+  R(-5, 8, 10, 8, TUN); R(-5, 8, 2, 8, TUNL); R(-5, 15, 10, 1, TUND); R(-4, 16, 2, 1, TUND); R(2, 16, 2, 1, TUND);
+  R(1, 9, 1, 1, LEAD); R(2, 10, 1, 1, LEAD); R(1, 11, 1, 1, LEAD);
+  // tracolla in diagonale e cintura con fibbia d'oro
+  for (let i = 0; i < 7; i++) R(-4 + i, 8 + i, 2, 1, LEA);
+  R(-5, 13, 10, 2, LEAD); R(0, 13, 2, 2, '#d4a83a'); R(-4, 15, 2, 2, LEA);
+  // testa grande con sorriso
+  R(-4, 1, 9, 7, SKIN); R(-4, 7, 9, 1, SKD); R(-4, 3, 1, 2, SKD);
+  R(1, 3, 1, 2, '#1a0f0a'); R(3, 3, 1, 2, '#1a0f0a');
+  R(0, 5, 5, 1, '#6a2a1a'); R(1, 5, 3, 1, '#ffffff'); R(1, 6, 3, 1, '#8a3a2a'); R(-1, 4, 1, 1, '#e89a80'); R(4, 4, 1, 1, '#e89a80');
+  // capelli arruffati
+  R(-5, -1, 10, 3, HAIR); R(-5, 2, 2, 2, HAIR); R(-6, 0, 2, 2, HAIR); R(-3, -3, 2, 2, HAIR); R(0, -3, 3, 2, HAIR); R(4, -2, 2, 2, HAIR);
+  R(-1, -2, 2, 1, HAIRL); R(2, 0, 2, 1, HAIRL); R(3, 1, 2, 1, HAIR);
+  // braccio con bracciale di cuoio
+  if (p.atkT <= 0) { R(2, 9, 3, 3, TUN); R(2, 11, 3, 2, LEA); R(3, 13, 2, 2, SKIN); }
   ctx.restore();
   drawWeapon();
 }
@@ -44,6 +55,14 @@ function drawWeapon() {
     else if (S.weapon === 'hammer') { R(0, -1, len, 2, w.hilt); R(len - 5, -6, 7, 12, w.blade); R(len - 5, -6, 2, 12, '#fff0b0'); }
     else if (S.weapon === 'scythe') { R(0, -1, len, 2, w.hilt); R(len - 1, -1, 2, 3, '#5a5a62'); R(len - 12, 1, 12, 2, w.blade); R(len - 16, 3, 6, 2, w.blade); R(len - 12, 1, 12, 1, '#e8eef4'); }
     else { R(0, -1, 3, 3, w.hilt); R(3, -3, 2, 6, '#c9a24a'); R(5, -1, len, 2, w.blade); R(5, -1, len, 1, '#ffffff'); R(5 + len, 0, 2, 1, w.blade); }
+    if (w.fire) { // lama ardente: fiamme animate lungo il filo
+      for (let i = 6; i < len + 4; i += 2) {
+        const h = 2 + Math.floor((Math.sin(gameT * 18 + i * 1.7) + 1) * 1.5);
+        R(i, -1 - h, 2, h, i % 4 ? '#ff7a1a' : '#ffb03a');
+        if (h > 3) R(i, -1 - h, 1, 1, '#fff0a0');
+      }
+      R(6, -2, len - 1, 1, '#ffd060');
+    }
   };
   if (!atk) {
     if (w.type === 'ranged') { R(0, 1, 10, 3, w.hilt); R(8, -3, 2, 10, '#8a8f98'); }
@@ -64,7 +83,7 @@ function drawWeapon() {
   } else {
     const [a0, a1] = w.type === 'arc' ? [-2.7, 1.3] : w.type === 'heavy' ? [-2.3, 1.2] : [-1.9, 1.0];
     const e = 1 - Math.pow(1 - prog, 3), a = a0 + (a1 - a0) * e, len = w.len + 4;
-    ctx.strokeStyle = S.weapon === 'dusk' ? 'rgba(255,220,140,.55)' : 'rgba(230,236,255,.45)'; ctx.lineWidth = 4;
+    ctx.strokeStyle = S.weapon === 'dusk' ? 'rgba(255,220,140,.55)' : w.fire ? 'rgba(255,130,40,.6)' : 'rgba(230,236,255,.45)'; ctx.lineWidth = 4;
     ctx.beginPath(); ctx.arc(0, 0, len, Math.max(a0, a - 1.4), a); ctx.stroke();
     ctx.lineWidth = 1; ctx.strokeStyle = 'rgba(255,255,255,.7)'; ctx.beginPath(); ctx.arc(0, 0, len + 2, Math.max(a0, a - .7), a); ctx.stroke();
     ctx.rotate(a); blade(w.len);
