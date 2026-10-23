@@ -1,0 +1,55 @@
+<title>Villa Morgrave</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Pirata+One&family=Silkscreen&family=IM+Fell+English:ital@0;1&display=swap">
+<style>
+/* Layout: palco centrale con canvas pixel-art, comandi touch sotto su schermi tattili */
+:root {
+  --bg: #0b080f; --ink: #d8cfc0; --dim: #8a7f92; --gold: #c9a24a; --blood: #8e1b26; --panel: #16101d; --line: #2e2338;
+  --display: "Pirata One", Georgia, serif; --body: "IM Fell English", Georgia, serif; --pix: "Silkscreen", "Courier New", monospace;
+  color-scheme: dark;
+}
+html, body { height: 100%; }
+body { background: var(--bg); color: var(--ink); font-family: var(--body); overflow-x: hidden; }
+.wrap { min-height: 100%; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 12px;
+  padding-block: 12px; padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  background: radial-gradient(ellipse at 50% 30%, #1d1226 0%, var(--bg) 70%); }
+.stage { width: 100%; max-width: min(1440px, calc((100vh - 96px) * 480 / 272)); }
+canvas { display: block; width: 100%; height: auto; aspect-ratio: 480 / 272; image-rendering: pixelated; image-rendering: crisp-edges;
+  background: #000; border: 1px solid var(--line); box-shadow: 0 0 0 4px #000, 0 24px 70px rgba(142, 27, 38, .22); outline: none; touch-action: none; }
+canvas:focus-visible { border-color: var(--gold); }
+.help { font-family: var(--pix); font-size: 11px; color: var(--dim); text-align: center; line-height: 1.7; max-width: 900px; margin: 0; }
+.help b { color: var(--gold); font-weight: normal; }
+.pad { display: none; width: 100%; max-width: 720px; justify-content: space-between; align-items: center; gap: 12px; user-select: none; -webkit-user-select: none; touch-action: none; }
+.cluster { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: center; }
+.mid { flex-direction: column; gap: 6px; }
+.mid .cluster { gap: 6px; }
+.pad button { font-family: var(--pix); font-size: 12px; color: var(--ink); background: var(--panel); border: 1px solid #4a3a5a; border-radius: 10px;
+  min-width: 52px; height: 52px; padding: 0 10px; touch-action: none; -webkit-tap-highlight-color: transparent; }
+.pad button.small { min-width: 44px; height: 32px; font-size: 10px; border-radius: 8px; color: var(--dim); }
+.pad button.act { border-color: var(--gold); }
+.pad button.on { background: #3a2a14; border-color: var(--gold); color: #fff2b0; }
+@media (pointer: coarse) { .pad { display: flex; } .help { display: none; } .stage { max-width: min(1440px, calc((100vh - 150px) * 480 / 272)); } }
+@media (max-width: 520px) { .pad button { min-width: 46px; height: 48px; } }
+</style>
+<div class="wrap">
+  <div class="stage"><canvas id="game" width="480" height="272" tabindex="0" aria-label="Villa Morgrave, gioco"></canvas></div>
+  <div class="pad" aria-label="Comandi touch">
+    <div class="cluster">
+      <button data-k="ArrowLeft" aria-label="Sinistra">◀</button>
+      <button data-k="ArrowDown" aria-label="Giù">▼</button>
+      <button data-k="ArrowRight" aria-label="Destra">▶</button>
+    </div>
+    <div class="mid">
+      <div class="cluster"><button class="small" data-k="KeyQ">Arma−</button><button class="small" data-k="KeyE">Arma+</button><button class="small" data-k="KeyF">Pozione</button></div>
+      <div class="cluster"><button class="small" data-k="KeyM">Mappa</button><button class="small" data-k="Enter">Menu</button><button class="small" data-k="KeyN">Audio</button></div>
+    </div>
+    <div class="cluster">
+      <button data-k="KeyC">Scatto</button>
+      <button class="act" data-k="KeyX">Colpo</button>
+      <button class="act" data-k="Space">Salto</button>
+    </div>
+  </div>
+  <p class="help"><b>Frecce/WASD</b> muovi · <b>Z/Spazio</b> salta · <b>Giù+salto</b> scendi dalle travi · <b>X</b> colpisci · <b>C</b> scatto · <b>Q/E</b> cambia arma · <b>F</b> pozione · <b>M</b> mappa · <b>Invio</b> diario · <b>N</b> audio<br>Colpisci i muri sospetti: alcuni nascondono passaggi segreti.</p>
+</div>
