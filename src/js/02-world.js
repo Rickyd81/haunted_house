@@ -86,7 +86,7 @@ LINKS.forEach((l, i) => {
 const ALL_LINKS = LINKS.map((l, i) => { const [x1, y1, x2, y2, type = 'n', need = 0] = l; return { id: 'L' + i, x1, y1, x2, y2, type, need }; });
 
 const WEAPONS = {
-  sword: { name: 'Spada del Cavaliere', desc: 'Equilibrata e rapida', mult: 1, cd: .3, dur: .18, reach: 24, hh: 16, kb: 90, type: 'slash', len: 14, blade: '#d6dde6', hilt: '#7a5a2a' },
+  sword: { name: 'Spada Ardente', desc: 'Equilibrata e rapida, lama in fiamme', mult: 1, cd: .3, dur: .18, reach: 24, hh: 16, kb: 90, type: 'slash', len: 14, blade: '#d6dde6', hilt: '#8a3a1a', fire: 1 },
   axe: { name: 'Ascia del Boia', desc: 'Lenta, colpi pesanti', mult: 1.5, cd: .52, dur: .24, reach: 26, hh: 24, kb: 150, type: 'heavy', len: 15, blade: '#a9b0b8', hilt: '#5a3a22' },
   spear: { name: 'Lancia di Frassino', desc: 'Grande portata frontale', mult: 1.15, cd: .36, dur: .2, reach: 42, hh: 8, kb: 100, type: 'thrust', len: 28, blade: '#cfd6de', hilt: '#7a5a36' },
   xbow: { name: "Balestra d'Argento", desc: 'Dardi a distanza', mult: .95, cd: .42, dur: .15, type: 'ranged', speed: 330, len: 12, blade: '#c0c8d0', hilt: '#5a3a22' },
@@ -115,6 +115,9 @@ const EN = {
   ghost: { hp: 13, atk: 6, w: 12, h: 16, spd: 30, xp: 5, fly: 1, ghost: 1 },
   archer: { hp: 12, atk: 5, w: 10, h: 22, spd: 0, xp: 5 },
   armor: { hp: 36, atk: 9, w: 14, h: 24, spd: 22, xp: 8, def: .3 },
+  // Mummia: compare dopo la sconfitta del primo custode. Attacca a pugni; quando cade,
+  // si affloscia a terra e dopo un secondo ne rinasce uno scheletro che lancia ossa.
+  mummy: { hp: 30, atk: 8, w: 12, h: 24, spd: 24, xp: 9 },
 };
 
 const BOSSES = {

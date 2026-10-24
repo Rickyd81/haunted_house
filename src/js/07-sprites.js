@@ -99,7 +99,9 @@ function drawEnemy(e) {
   ctx.scale(e.face, 1);
   const moving = Math.abs(e.vx) > 5, s = moving ? Math.round(Math.sin(e.t * 12) * 1.5) : 0;
   const B = '#ddd5c0', D = '#9d957f', K = '#120d10';
+  if (e.rise > 0) { ctx.globalAlpha = 1 - e.rise / .6; ctx.translate(0, Math.round(e.rise * 18)); }
   switch (e.type) {
+    case 'mummy': drawMummy(e, s); break;
     case 'skel': case 'archer':
       R(-4, 0, 8, 7, B); R(-3, 7, 6, 1, D); R(-3, 2, 2, 2, K); R(1, 2, 2, 2, K); R(2, 2, 1, 1, '#ff3a3a'); R(0, 5, 1, 1, K);
       R(-1, 8, 2, 7, B); R(-3, 9, 6, 1, B); R(-3, 11, 6, 1, B); R(-2, 13, 4, 1, B); R(-3, 15, 6, 2, D);
@@ -143,6 +145,39 @@ function drawEnemy(e) {
     }
   }
   ctx.restore(); FL = false;
+}
+
+// Mummia (dal disegno di Riccardo): bende chiare a righe diagonali, occhi arancioni, braccia scure
+function drawMummy(e, s) {
+  const BD = '#d8d0b8', BL = '#ece6d2', ST = '#2a2420', OR = '#ff9a2a';
+  const stripes = (x0, y0, w, h, off = 0) => { // righe diagonali come nel disegno
+    for (let y = 0; y < h; y++) for (let x = 0; x < w; x++) if ((x + y + off) % 4 === 0) R(x0 + x, y0 + y, 1, 1, ST);
+  };
+  if (e.collapse > 0) { // si affloscia schiacciandosi verso terra
+    const k = clamp((1.1 - e.collapse) / .3, 0, 1), sy = 1 - .72 * k;
+    ctx.translate(0, e.h); ctx.scale(1, sy); ctx.translate(0, -e.h);
+    if (e.collapse < .35) ctx.translate(Math.round(Math.sin(gameT * 60)), 0);
+  }
+  const punch = e.punch > 0, hitP = punch && e.punch < .22;
+  // braccio dietro
+  R(-8, 10, 4, 9, ST); R(-8, 18, 3, 2, ST);
+  // gambe con piedi tondi
+  R(-5 + s, 16, 5, 6, ST); R(1 - s, 16, 5, 6, ST);
+  R(-4 + s, 16, 3, 5, BD); R(2 - s, 16, 3, 5, BD); stripes(-4 + s, 16, 3, 5, 1); stripes(2 - s, 16, 3, 5, 2);
+  R(-6 + s, 21, 6, 3, ST); R(1 - s, 21, 6, 3, ST); R(-5 + s, 21, 4, 2, BD); R(2 - s, 21, 4, 2, BD);
+  // corpo
+  R(-6, 8, 12, 10, ST); R(-5, 9, 10, 8, BD); R(-5, 9, 2, 8, BL); stripes(-5, 9, 10, 8);
+  // testa rotonda
+  R(-5, -1, 10, 1, ST); R(-6, 0, 12, 8, ST); R(-5, 8, 10, 1, ST);
+  R(-5, 0, 10, 8, BD); R(-4, 0, 3, 2, BL); stripes(-5, 0, 10, 8, 2);
+  R(-3, 2, 3, 3, ST); R(1, 1, 3, 3, ST); R(-2, 3, 1, 1, OR); R(2, 2, 1, 1, OR);
+  R(0, 5, 2, 2, ST); R(-2, -2, 2, 1, ST);
+  // braccio davanti: a riposo o pugno
+  if (punch) {
+    const ext = hitP ? 11 : 2;
+    R(4, 10, 3 + ext, 4, ST); R(4 + ext, 9, 5, 6, ST);
+    if (hitP) { ctx.fillStyle = 'rgba(255,240,200,.35)'; ctx.fillRect(8 + ext, 8, 6, 8); }
+  } else { R(4, 9, 4, 9, ST); R(5, 17, 3, 2, ST); }
 }
 
 function drawBoss(b) {

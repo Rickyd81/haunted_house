@@ -156,4 +156,4 @@ try { window.claude?.hot?.snapshot?.(() => ({ S, room: room && room.key, x: P &&
 if (window.claude?.hot?.ready) window.claude.hot.ready(boot); else boot(window.claude?.hot?.data ?? {});
 
 // accesso per i test
-window.__vm = { get S() { return S; }, get state() { return state; }, get room() { return room; }, get P() { return P; }, get enemies() { return enemies; }, enterRoom, newGame, startBoss, giveReward, gainXP, set state(v) { state = v; } };
+window.__vm = { get S() { return S; }, get state() { return state; }, get room() { return room; }, get P() { return P; }, get enemies() { return enemies; }, enterRoom, newGame, startBoss, giveReward, gainXP, spawnEnemy, hurtEnemy, set state(v) { state = v; } };

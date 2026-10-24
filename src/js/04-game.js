@@ -176,7 +176,7 @@ function breakSecret(tx) {
 }
 
 function hurtEnemy(e, w, dir, scale = 1) {
-  if (e.invuln || e.dying || e.dead) return;
+  if (e.invuln || e.dying || e.dead || e.collapse > 0 || e.rise > 0) return;
   let d = S.str * w.mult * scale * rand(.9, 1.1);
   const crit = Math.random() < .03 + S.luck * .012;
   if (crit) d *= 1.6;
@@ -192,6 +192,12 @@ function hurtEnemy(e, w, dir, scale = 1) {
   if (e.hp <= 0) { if (e.isBoss) startBossDeath(e); else killEnemy(e); }
 }
 function killEnemy(e) {
+  if (e.type === 'mummy') { // si affloscia invece di sparire
+    e.collapse = 1.1; e.vx = 0; S.kills++; gainXP(e.xp);
+    texts.push({ x: e.x + e.w / 2, y: e.y - 10, s: '+' + e.xp + ' XP', c: '#c9a24a', life: .9, vy: -25 });
+    burst(e.x + e.w / 2, e.y + e.h / 2, 12, ['#d8d0b8', '#2a2420'], 90, .6, 2, 300); sfx.kill();
+    return;
+  }
   e.dead = true; S.kills++;
   gainXP(e.xp);
   burst(e.x + e.w / 2, e.y + e.h / 2, 16, e.ghost ? ['#cfe0ff', '#ffffff'] : ['#e0d6c0', '#8a1a1a', '#5a4a40'], 120, .7, 2, 350);
@@ -246,18 +252,40 @@ function spawnEnemies() {
   const ar = AREAS[def.a];
   if (!ar.enemies.length) return;
   const lvl = ar.base + Object.keys(S.bosses).length;
+  const pool = S.bosses[1] ? [...ar.enemies, 'mummy', 'mummy'] : ar.enemies;
   const n = 2 + Math.floor(Math.random() * 2) + (ar.base >= 7 ? 1 : 0);
   for (let i = 0; i < n; i++) {
     let x, tries = 0;
     do { x = rand(48, W - 70); } while (Math.abs(x - P.x) < 120 && tries++ < 30);
-    spawnEnemy(pick(ar.enemies), x, lvl);
+    spawnEnemy(pick(pool), x, lvl);
   }
 }
 function updateEnemy(e, dt) {
   e.t += dt; if (e.flash > 0) e.flash -= dt; if (e.stun > 0) e.stun -= dt;
+  // mummia afflosciata: dopo un attimo rinasce come scheletro lanciatore di ossa
+  if (e.collapse > 0) {
+    e.collapse -= dt; e.vy = Math.min(e.vy + 900 * dt, 400); moveEnt(e, dt);
+    if (e.collapse < .35 && Math.random() < .4) parts.push({ x: e.x + rand(0, e.w), y: e.y + e.h - 3, vx: rand(-20, 20), vy: -40, life: .4, max: .4, c: '#ddd5c0', s: 2, g: 200 });
+    if (e.collapse <= 0) {
+      e.dead = true;
+      const s = spawnEnemy('archer', e.x + 1, e.lvl);
+      s.rise = .6; s.t = 1.3; s.face = e.face;
+      burst(e.x + e.w / 2, e.y + e.h - 4, 18, ['#ddd5c0', '#9d957f', '#d8d0b8'], 100, .6, 2, 300); sfx.crack();
+    }
+    return;
+  }
+  if (e.rise > 0) { e.rise -= dt; e.t = Math.min(e.t, 1.3); e.vy = Math.min(e.vy + 900 * dt, 400); moveEnt(e, dt); return; }
   const px = P.x + P.w / 2, py = P.y + P.h / 2, ex = e.x + e.w / 2, ey = e.y + e.h / 2, dx = px - ex, dy = py - ey, dist = Math.hypot(dx, dy) || 1;
-  if (e.type === 'skel' || e.type === 'zomb' || e.type === 'armor' || e.type === 'archer') {
-    if (e.stun > 0) e.vx *= .9;
+  if (e.type === 'skel' || e.type === 'zomb' || e.type === 'armor' || e.type === 'archer' || e.type === 'mummy') {
+    if (e.stun > 0) { e.vx *= .9; e.punch = 0; }
+    else if (e.type === 'mummy' && e.punch > 0) { // pugno: carica e colpisce
+      e.punch -= dt; e.vx = 0;
+      if (e.punch < .22 && !e.punched) {
+        e.punched = true; sfx.swing();
+        const box = { x: e.face > 0 ? e.x + e.w : e.x - 20, y: e.y + 6, w: 20, h: 12 };
+        if (overlap(box, P)) hurtPlayer(e.atk * 1.4, e.face);
+      }
+    }
     else if (e.type === 'archer') {
       e.vx = 0; e.face = Math.sign(dx) || 1;
       if (e.t > 2.4 && dist < 260) {
@@ -270,6 +298,7 @@ function updateEnemy(e, dt) {
       if (chase) e.face = Math.sign(dx) || e.face;
       const sp = e.spd * (chase ? 1.6 : 1);
       if (e.lunge > 0) e.lunge -= dt;
+      else if (e.type === 'mummy' && chase && Math.abs(dx) < 26 && e.t > 1.1) { e.punch = .5; e.punched = false; e.t = 0; e.vx = 0; }
       else if ((e.type === 'armor' || e.type === 'zomb') && chase && Math.abs(dx) < 60 && e.t > 2.5) { e.vx = e.face * (e.type === 'armor' ? 170 : 110); e.t = 0; e.lunge = .35; }
       else e.vx = e.face * sp;
       if (e.type === 'skel' && chase && e.onGround && Math.random() < dt * .6) e.vy = -230;
@@ -327,6 +356,7 @@ function updateProjs(dt) {
     } else if (p.friendly) {
       for (const e of enemies) {
         if (e.dead || !overlap(p, e)) continue;
+        if (e.collapse > 0 || e.rise > 0) continue;
         if (p.pierce) { if (p.hits.has(e)) continue; p.hits.add(e); }
         hurtEnemy(e, WEAPONS[p.wk], Math.sign(p.vx) || 1, p.scale || 1);
         if (!p.pierce) { p.life = 0; break; }
