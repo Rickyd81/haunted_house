@@ -51,11 +51,16 @@ function update(dt) {
       return;
     case 'map': if (hit('map') || hit('pause')) state = 'play'; return;
     case 'pause': {
-      const list = WORDER.filter(k => S.weapons.includes(k));
-      if (hit('up')) pauseSel = (pauseSel + list.length - 1) % list.length;
-      if (hit('down')) pauseSel = (pauseSel + 1) % list.length;
-      if (['KeyX', 'KeyJ', 'KeyZ', 'Space'].some(k => pressed[k])) { S.weapon = list[pauseSel]; sfx.pick(); }
-      if (hit('pause')) state = 'play';
+      if (padWait) { updatePadMenu(); return; }
+      if (hit('left') || hit('right')) { pauseTab = 1 - pauseTab; sfx.throw(); }
+      else if (pauseTab === 1) updatePadMenu();
+      else {
+        const list = WORDER.filter(k => S.weapons.includes(k));
+        if (hit('up')) pauseSel = (pauseSel + list.length - 1) % list.length;
+        if (hit('down')) pauseSel = (pauseSel + 1) % list.length;
+        if (['KeyX', 'KeyJ', 'KeyZ', 'Space', 'GP_jump', 'GP_attack'].some(k => pressed[k])) { S.weapon = list[pauseSel]; sfx.pick(); }
+      }
+      if (!padWait && hit('pause')) state = 'play';
       return;
     }
     case 'dead': deadT += dt; updateParticles(dt); if (deadT > 1.5 && hitConfirm()) respawn(); return;
@@ -126,6 +131,7 @@ const STEP = 1 / 60;
 let last = performance.now(), acc = 0;
 function loop(now) {
   acc += Math.min(.1, (now - last) / 1000); last = now;
+  try { pollPad(); } catch (err) { console.error(err); }
   while (acc >= STEP) {
     try { update(STEP); } catch (err) { console.error(err); }
     for (const k in pressed) delete pressed[k];

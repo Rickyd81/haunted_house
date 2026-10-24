@@ -17,18 +17,18 @@ const approach = (v, t, a) => v < t ? Math.min(v + a, t) : Math.max(v - a, t);
 // ----- Input -----
 const keys = {}, pressed = {};
 const BIND = {
-  left: ['ArrowLeft', 'KeyA'], right: ['ArrowRight', 'KeyD'],
-  up: ['ArrowUp', 'KeyW'], down: ['ArrowDown', 'KeyS'],
-  jump: ['Space', 'KeyZ', 'ArrowUp', 'KeyW'],
-  attack: ['KeyX', 'KeyJ'],
-  dash: ['KeyC', 'KeyK', 'ShiftLeft', 'ShiftRight'],
-  prev: ['KeyQ'], next: ['KeyE'],
-  potion: ['KeyF', 'KeyV'],
-  map: ['KeyM', 'Tab'],
-  pause: ['Enter', 'Escape', 'KeyP'],
+  left: ['ArrowLeft', 'KeyA', 'GP_left'], right: ['ArrowRight', 'KeyD', 'GP_right'],
+  up: ['ArrowUp', 'KeyW', 'GP_up'], down: ['ArrowDown', 'KeyS', 'GP_down'],
+  jump: ['Space', 'KeyZ', 'ArrowUp', 'KeyW', 'GP_jump'],
+  attack: ['KeyX', 'KeyJ', 'GP_attack'],
+  dash: ['KeyC', 'KeyK', 'ShiftLeft', 'ShiftRight', 'GP_dash'],
+  prev: ['KeyQ', 'GP_prev'], next: ['KeyE', 'GP_next'],
+  potion: ['KeyF', 'KeyV', 'GP_potion'],
+  map: ['KeyM', 'Tab', 'GP_map'],
+  pause: ['Enter', 'Escape', 'KeyP', 'GP_pause'],
   mute: ['KeyN'],
 };
-const CONFIRM = ['Enter', 'Space', 'KeyX', 'KeyJ', 'KeyZ'];
+const CONFIRM = ['Enter', 'Space', 'KeyX', 'KeyJ', 'KeyZ', 'GP_jump', 'GP_attack'];
 const down = a => BIND[a].some(k => keys[k]);
 const hit = a => BIND[a].some(k => pressed[k]);
 const hitConfirm = () => CONFIRM.some(k => pressed[k]);

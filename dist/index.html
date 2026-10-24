@@ -58,7 +58,7 @@ canvas:focus-visible { border-color: var(--gold); }
       <button class="act" data-k="Space">Salto</button>
     </div>
   </div>
-  <p class="help"><b>Frecce/WASD</b> muovi · <b>Z/Spazio</b> salta · <b>Giù+salto</b> scendi dalle travi · <b>X</b> colpisci · <b>C</b> scatto · <b>Q/E</b> cambia arma · <b>F</b> pozione · <b>M</b> mappa · <b>Invio</b> diario · <b>N</b> audio<br>Colpisci i muri sospetti: alcuni nascondono passaggi segreti.</p>
+  <p class="help"><b>Frecce/WASD</b> muovi · <b>Z/Spazio</b> salta · <b>Giù+salto</b> scendi dalle travi · <b>X</b> colpisci · <b>C</b> scatto · <b>Q/E</b> cambia arma · <b>F</b> pozione · <b>M</b> mappa · <b>Invio</b> diario · <b>N</b> audio<br><b>Controller</b>: collegalo e premi un pulsante; i tasti si configurano nel Diario, scheda Controller.<br>Colpisci i muri sospetti: alcuni nascondono passaggi segreti.</p>
 </div>
 <script>
 (() => {
@@ -82,18 +82,18 @@ const approach = (v, t, a) => v < t ? Math.min(v + a, t) : Math.max(v - a, t);
 // ----- Input -----
 const keys = {}, pressed = {};
 const BIND = {
-  left: ['ArrowLeft', 'KeyA'], right: ['ArrowRight', 'KeyD'],
-  up: ['ArrowUp', 'KeyW'], down: ['ArrowDown', 'KeyS'],
-  jump: ['Space', 'KeyZ', 'ArrowUp', 'KeyW'],
-  attack: ['KeyX', 'KeyJ'],
-  dash: ['KeyC', 'KeyK', 'ShiftLeft', 'ShiftRight'],
-  prev: ['KeyQ'], next: ['KeyE'],
-  potion: ['KeyF', 'KeyV'],
-  map: ['KeyM', 'Tab'],
-  pause: ['Enter', 'Escape', 'KeyP'],
+  left: ['ArrowLeft', 'KeyA', 'GP_left'], right: ['ArrowRight', 'KeyD', 'GP_right'],
+  up: ['ArrowUp', 'KeyW', 'GP_up'], down: ['ArrowDown', 'KeyS', 'GP_down'],
+  jump: ['Space', 'KeyZ', 'ArrowUp', 'KeyW', 'GP_jump'],
+  attack: ['KeyX', 'KeyJ', 'GP_attack'],
+  dash: ['KeyC', 'KeyK', 'ShiftLeft', 'ShiftRight', 'GP_dash'],
+  prev: ['KeyQ', 'GP_prev'], next: ['KeyE', 'GP_next'],
+  potion: ['KeyF', 'KeyV', 'GP_potion'],
+  map: ['KeyM', 'Tab', 'GP_map'],
+  pause: ['Enter', 'Escape', 'KeyP', 'GP_pause'],
   mute: ['KeyN'],
 };
-const CONFIRM = ['Enter', 'Space', 'KeyX', 'KeyJ', 'KeyZ'];
+const CONFIRM = ['Enter', 'Space', 'KeyX', 'KeyJ', 'KeyZ', 'GP_jump', 'GP_attack'];
 const down = a => BIND[a].some(k => keys[k]);
 const hit = a => BIND[a].some(k => pressed[k]);
 const hitConfirm = () => CONFIRM.some(k => pressed[k]);
@@ -1798,7 +1798,12 @@ function fmtTime(s) { s = Math.floor(s); const h = Math.floor(s / 3600), m = Mat
 
 function drawPause() {
   ctx.fillStyle = 'rgba(6,3,10,.94)'; ctx.fillRect(0, 0, W, H);
-  text('Il Diario del Cavaliere', W / 2, 8, '#e8d8b0', 'center', 22, DF);
+  text('Il Diario del Cavaliere', W / 2, 6, '#e8d8b0', 'center', 22, DF);
+  ['Diario', 'Controller'].forEach((t, i) => {
+    const x = W / 2 + (i ? 8 : -8), on = pauseTab === i;
+    text((on ? '[ ' : '') + t + (on ? ' ]' : ''), x, 29, on ? '#ffd98a' : '#6a6078', i ? 'left' : 'right');
+  });
+  if (pauseTab === 1) { drawPadMenu(); text('Invio / Esc / Start riprendi', W / 2, 250, '#6a6078', 'center'); return; }
   panel(16, 40, 200, 168);
   text('STATISTICHE', 26, 48, '#c9a24a');
   const rows = [['Livello', S.lvl], ['PV', `${S.hp} / ${S.maxhp}`], ['Forza', S.str], ['Difesa', S.def], ['Fortuna', S.luck], ['Esperienza', `${S.xp} / ${xpNeed(S.lvl)}`], ['Pozioni', `${S.potions} / ${S.maxPot}`], ['Emblemi', `${S.sigils} / 5`], ['Nemici sconfitti', S.kills], ['Esplorazione', Math.round(Object.keys(S.visited).length / ROOM_DEFS.length * 100) + '%'], ['Tempo', fmtTime(S.time)]];
@@ -1817,7 +1822,7 @@ function drawPause() {
   text(`${WORDER.length - list.length} armi ancora nascoste`, 234, 192, '#6a6078');
   text('ABILITÀ', 26, 216, '#c9a24a');
   text(`Scatto ${S.dash ? '[C]' : '—'}    Doppio salto ${S.dj ? '[salto in aria]' : '—'}`, 90, 216, '#d8d0e0');
-  text('Su/Giù scegli arma · X equipaggia · Invio/Esc riprendi · N audio', W / 2, 236, '#7a7088', 'center');
+  text('Su/Giù scegli arma · X equipaggia · Sinistra/Destra: controller · Invio riprendi', W / 2, 236, '#7a7088', 'center');
   text('Frecce muovi · Z/Spazio salta · Giù+salto scendi · X colpisci · C scatto · Q/E arma · F pozione', W / 2, 250, '#6a6078', 'center');
 }
 
@@ -1843,7 +1848,8 @@ function drawTitle() {
     text((sel ? '» ' : '') + o + (sel ? ' «' : ''), W / 2, y, sel ? '#ffd98a' : '#8a8098', 'center');
   });
   if (opts.length > 1 && opts[titleSel] === 'Nuova partita') text('Il salvataggio esistente verrà sovrascritto', W / 2, 140 + opts.length * 16 + 2, '#8a4a5a', 'center');
-  text('Frecce muovi · Z salta · X colpisci · C scatto · Q/E arma · F pozione · M mappa', W / 2, 228, '#6a6078', 'center');
+  text('Frecce muovi · Z salta · X colpisci · C scatto · Q/E arma · F pozione · M mappa', W / 2, 222, '#6a6078', 'center');
+  text(getPad() ? 'Controller collegato: configuralo dal Diario (Invio / Start)' : 'Controller supportato: collegalo e premi un pulsante', W / 2, 256, getPad() ? '#8ad08a' : '#6a6078', 'center');
   text('Invio, Spazio o tocca lo schermo per iniziare', W / 2, 242, '#8a8098', 'center');
 }
 
@@ -1911,11 +1917,16 @@ function update(dt) {
       return;
     case 'map': if (hit('map') || hit('pause')) state = 'play'; return;
     case 'pause': {
-      const list = WORDER.filter(k => S.weapons.includes(k));
-      if (hit('up')) pauseSel = (pauseSel + list.length - 1) % list.length;
-      if (hit('down')) pauseSel = (pauseSel + 1) % list.length;
-      if (['KeyX', 'KeyJ', 'KeyZ', 'Space'].some(k => pressed[k])) { S.weapon = list[pauseSel]; sfx.pick(); }
-      if (hit('pause')) state = 'play';
+      if (padWait) { updatePadMenu(); return; }
+      if (hit('left') || hit('right')) { pauseTab = 1 - pauseTab; sfx.throw(); }
+      else if (pauseTab === 1) updatePadMenu();
+      else {
+        const list = WORDER.filter(k => S.weapons.includes(k));
+        if (hit('up')) pauseSel = (pauseSel + list.length - 1) % list.length;
+        if (hit('down')) pauseSel = (pauseSel + 1) % list.length;
+        if (['KeyX', 'KeyJ', 'KeyZ', 'Space', 'GP_jump', 'GP_attack'].some(k => pressed[k])) { S.weapon = list[pauseSel]; sfx.pick(); }
+      }
+      if (!padWait && hit('pause')) state = 'play';
       return;
     }
     case 'dead': deadT += dt; updateParticles(dt); if (deadT > 1.5 && hitConfirm()) respawn(); return;
@@ -1986,6 +1997,7 @@ const STEP = 1 / 60;
 let last = performance.now(), acc = 0;
 function loop(now) {
   acc += Math.min(.1, (now - last) / 1000); last = now;
+  try { pollPad(); } catch (err) { console.error(err); }
   while (acc >= STEP) {
     try { update(STEP); } catch (err) { console.error(err); }
     for (const k in pressed) delete pressed[k];
@@ -2011,6 +2023,120 @@ if (window.claude?.hot?.ready) window.claude.hot.ready(boot); else boot(window.c
 
 // accesso per i test
 window.__vm = { get S() { return S; }, get state() { return state; }, get room() { return room; }, get P() { return P; }, get enemies() { return enemies; }, enterRoom, newGame, startBoss, giveReward, gainXP, set state(v) { state = v; } };
+
+// ===== CONTROLLER (Gamepad API) con tasti configurabili =====
+// Le azioni del controller diventano tasti virtuali "GP_<azione>" letti da hit()/down().
+// Le direzioni (croce direzionale e levetta sinistra) sono fisse; le azioni si rimappano dal Diario.
+const PAD_ACTIONS = [
+  ['jump', 'Salta / conferma'],
+  ['attack', 'Attacca'],
+  ['dash', 'Scatto'],
+  ['potion', 'Pozione'],
+  ['prev', 'Arma precedente'],
+  ['next', 'Arma successiva'],
+  ['map', 'Mappa'],
+  ['pause', 'Diario / pausa'],
+];
+const PAD_DEFAULT = { jump: 0, attack: 2, dash: 1, potion: 3, prev: 4, next: 5, map: 8, pause: 9 };
+const PAD_KEY = 'villa_morgrave_pad';
+let padMap = loadPadMap();
+let padPrev = [], padName = '', padIdx = -1, padHeld = [];
+let padWait = null;          // azione in attesa di un nuovo pulsante
+let pauseTab = 0, padSel = 0; // scheda del Diario: 0 diario, 1 controller
+
+function loadPadMap() {
+  try { const s = JSON.parse(localStorage.getItem(PAD_KEY) || 'null'); if (s) return Object.assign({}, PAD_DEFAULT, s); } catch (e) { }
+  return Object.assign({}, PAD_DEFAULT);
+}
+function savePadMap() { try { localStorage.setItem(PAD_KEY, JSON.stringify(padMap)); } catch (e) { } }
+
+function isPS(id) { return /playstation|dualsense|dualshock|054c/i.test(id || ''); }
+function buttonName(i) {
+  const ps = isPS(padName);
+  const xb = ['A', 'B', 'X', 'Y', 'LB', 'RB', 'LT', 'RT', 'View', 'Menu', 'L3', 'R3', 'Su', 'Giù', 'Sinistra', 'Destra', 'Home'];
+  const pl = ['Croce', 'Cerchio', 'Quadrato', 'Triangolo', 'L1', 'R1', 'L2', 'R2', 'Share', 'Options', 'L3', 'R3', 'Su', 'Giù', 'Sinistra', 'Destra', 'PS'];
+  const n = (ps ? pl : xb)[i];
+  return n ? n : 'Pulsante ' + i;
+}
+
+function getPad() {
+  let pads = [];
+  try { pads = navigator.getGamepads ? Array.from(navigator.getGamepads()) : []; } catch (e) { return null; }
+  if (padIdx >= 0 && pads[padIdx] && pads[padIdx].connected) return pads[padIdx];
+  const p = pads.find(g => g && g.connected);
+  if (p) { padIdx = p.index; padName = p.id; }
+  return p || null;
+}
+
+// chiamata una volta per frame, prima degli aggiornamenti
+function pollPad() {
+  const gp = getPad();
+  if (!gp) { for (const a of ['GP_left', 'GP_right', 'GP_up', 'GP_down', ...PAD_ACTIONS.map(x => 'GP_' + x[0])]) keys[a] = false; padPrev = []; padHeld = []; return; }
+  const btn = i => !!(gp.buttons[i] && (gp.buttons[i].pressed || gp.buttons[i].value > .5));
+  const now = gp.buttons.map((_, i) => btn(i));
+  const fresh = now.map((v, i) => v && !padPrev[i]);
+  padHeld = now;
+  if (fresh.some(Boolean)) initAudio();
+  // configurazione: il primo pulsante nuovo diventa il comando dell'azione scelta
+  if (padWait) {
+    const i = fresh.findIndex(Boolean);
+    if (i >= 0 && !(i >= 12 && i <= 15)) {
+      const other = Object.keys(padMap).find(k => padMap[k] === i && k !== padWait);
+      if (other) padMap[other] = padMap[padWait]; // scambio se il pulsante era già usato
+      padMap[padWait] = i; savePadMap(); sfx.pick();
+      showToast(`${PAD_ACTIONS.find(a => a[0] === padWait)[1]}: ${buttonName(i)}`, 2);
+      padWait = null; padPrev = now;
+      return;
+    }
+    padPrev = now;
+    return;
+  }
+  const ax = gp.axes[0] || 0, ay = gp.axes[1] || 0, dz = .5;
+  const dirs = { GP_left: btn(14) || ax < -dz, GP_right: btn(15) || ax > dz, GP_up: btn(12) || ay < -dz, GP_down: btn(13) || ay > dz };
+  for (const k in dirs) { if (dirs[k] && !keys[k]) pressed[k] = true; keys[k] = dirs[k]; }
+  for (const [a] of PAD_ACTIONS) {
+    const i = padMap[a], k = 'GP_' + a;
+    if (fresh[i]) pressed[k] = true;
+    keys[k] = now[i];
+  }
+  padPrev = now;
+}
+
+addEventListener('gamepadconnected', e => { padIdx = e.gamepad.index; padName = e.gamepad.id; showToast('Controller collegato', 2.5); });
+addEventListener('gamepaddisconnected', e => { if (e.gamepad.index === padIdx) { padIdx = -1; showToast('Controller scollegato', 2.5); } });
+
+// ----- Scheda "Controller" del Diario -----
+function updatePadMenu() {
+  if (padWait) { if (pressed['Escape'] || pressed['Backspace']) { padWait = null; showToast('Configurazione annullata', 1.5); } return; }
+  const n = PAD_ACTIONS.length + 1; // ultima riga: ripristina
+  if (hit('up')) padSel = (padSel + n - 1) % n;
+  if (hit('down')) padSel = (padSel + 1) % n;
+  if (['KeyX', 'KeyJ', 'KeyZ', 'Space', 'GP_jump'].some(k => pressed[k])) {
+    if (padSel === PAD_ACTIONS.length) { padMap = Object.assign({}, PAD_DEFAULT); savePadMap(); sfx.pick(); showToast('Comandi predefiniti ripristinati', 2); }
+    else if (!getPad()) showToast('Nessun controller rilevato: premi un pulsante del controller', 2.5);
+    else { padWait = PAD_ACTIONS[padSel][0]; sfx.throw(); }
+  }
+}
+function drawPadMenu() {
+  const gp = getPad();
+  panel(16, 40, 448, 168);
+  text('CONTROLLER', 26, 48, '#c9a24a');
+  const nm = gp ? (gp.id.length > 46 ? gp.id.slice(0, 46) + '…' : gp.id) : 'Nessun controller rilevato';
+  text(nm, 454, 48, gp ? '#8ad08a' : '#d07a7a', 'right');
+  PAD_ACTIONS.forEach(([a, label], i) => {
+    const y = 64 + i * 13, sel = i === padSel, waiting = padWait === a;
+    if (sel) { ctx.fillStyle = 'rgba(201,162,74,.18)'; ctx.fillRect(22, y - 2, 436, 12); }
+    text(label, 30, y, sel ? '#fff2b0' : '#d8d0e0');
+    const live = gp && padHeld[padMap[a]];
+    const v = waiting ? (Math.floor(gameT * 3) % 2 ? 'Premi un pulsante…' : '') : buttonName(padMap[a]);
+    text(v, 450, y, waiting ? '#ffd34a' : live ? '#8ad08a' : '#c8c0d0', 'right');
+  });
+  const ry = 64 + PAD_ACTIONS.length * 13 + 4, rs = padSel === PAD_ACTIONS.length;
+  if (rs) { ctx.fillStyle = 'rgba(201,162,74,.18)'; ctx.fillRect(22, ry - 2, 436, 12); }
+  text('Ripristina comandi predefiniti', 30, ry, rs ? '#fff2b0' : '#a89eb0');
+  text('Movimento: croce direzionale o levetta sinistra (Giù + salto per scendere dalle travi)', W / 2, 216, '#a89eb0', 'center');
+  text(padWait ? 'Premi il pulsante da assegnare · Esc per annullare' : 'Su/Giù scegli · X o pulsante Salta per cambiare · Sinistra/Destra cambia scheda', W / 2, 232, '#7a7088', 'center');
+}
 
 })();
 </script>

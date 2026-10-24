@@ -23,6 +23,12 @@ Apri `dist/index.html` nel browser (oppure pubblica la cartella con GitHub Pages
 
 Su telefono e tablet compaiono i comandi touch.
 
+### Controller
+
+Collega un controller (Xbox, PlayStation o compatibile) e premi un pulsante: viene riconosciuto subito. Predefiniti: A salta, X attacca, B scatto, Y pozione, LB/RB cambia arma, View mappa, Menu diario. Ci si muove con la croce direzionale o la levetta sinistra.
+
+Per cambiare i tasti apri il Diario (Invio o Start), passa alla scheda **Controller** con sinistra/destra, scegli l'azione e premi il nuovo pulsante. La configurazione resta salvata nel browser.
+
 ## Contenuti
 
 - **Aree**: Atrio dei Sussurri, Biblioteca Proibita, Cripte di Famiglia, Cappella Sconsacrata, Torre del Corvo, Santuario del Necromante.
@@ -44,6 +50,7 @@ src/js/06-render-room.js  disegno delle stanze e degli arredi gotici
 src/js/07-sprites.js      sprite pixel art di eroe, armi, nemici, boss
 src/js/08-ui.js     luci, HUD, mappa, menu
 src/js/09-main.js   ciclo di gioco
+src/js/10-gamepad.js  supporto controller e configurazione dei tasti
 build.py            unisce tutto in dist/index.html
 ```
 
