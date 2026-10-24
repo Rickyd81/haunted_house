@@ -1,6 +1,7 @@
 // ===== CONTROLLER (Gamepad API) con tasti configurabili =====
 // Le azioni del controller diventano tasti virtuali "GP_<azione>" letti da hit()/down().
 // Le direzioni (croce direzionale e levetta sinistra) sono fisse; le azioni si rimappano dal Diario.
+// Predefiniti pensati per lo Switch Pro: B salta, Y attacca, A scatto, X pozione, L/R armi, − mappa, + diario.
 const PAD_ACTIONS = [
   ['jump', 'Salta / conferma'],
   ['attack', 'Attacca'],
@@ -24,14 +25,10 @@ function loadPadMap() {
 }
 function savePadMap() { try { localStorage.setItem(PAD_KEY, JSON.stringify(padMap)); } catch (e) { } }
 
-function isPS(id) { return /playstation|dualsense|dualshock|054c/i.test(id || ''); }
-function buttonName(i) {
-  const ps = isPS(padName);
-  const xb = ['A', 'B', 'X', 'Y', 'LB', 'RB', 'LT', 'RT', 'View', 'Menu', 'L3', 'R3', 'Su', 'Giù', 'Sinistra', 'Destra', 'Home'];
-  const pl = ['Croce', 'Cerchio', 'Quadrato', 'Triangolo', 'L1', 'R1', 'L2', 'R2', 'Share', 'Options', 'L3', 'R3', 'Su', 'Giù', 'Sinistra', 'Destra', 'PS'];
-  const n = (ps ? pl : xb)[i];
-  return n ? n : 'Pulsante ' + i;
-}
+// Nomi dei pulsanti secondo il Nintendo Switch Pro Controller (mappatura standard del browser, per posizione):
+// 0 = pulsante in basso (B), 1 = a destra (A), 2 = a sinistra (Y), 3 = in alto (X)
+const SWITCH_NAMES = ['B', 'A', 'Y', 'X', 'L', 'R', 'ZL', 'ZR', '−', '+', 'Levetta L', 'Levetta R', 'Su', 'Giù', 'Sinistra', 'Destra', 'Home', 'Cattura'];
+function buttonName(i) { return SWITCH_NAMES[i] || 'Pulsante ' + i; }
 
 function getPad() {
   let pads = [];

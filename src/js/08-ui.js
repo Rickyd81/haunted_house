@@ -173,7 +173,7 @@ function drawPause() {
     const x = W / 2 + (i ? 8 : -8), on = pauseTab === i;
     text((on ? '[ ' : '') + t + (on ? ' ]' : ''), x, 29, on ? '#ffd98a' : '#6a6078', i ? 'left' : 'right');
   });
-  if (pauseTab === 1) { drawPadMenu(); text('Invio / Esc / Start riprendi', W / 2, 250, '#6a6078', 'center'); return; }
+  if (pauseTab === 1) { drawPadMenu(); text('Invio / Esc / + riprendi', W / 2, 250, '#6a6078', 'center'); return; }
   panel(16, 40, 200, 168);
   text('STATISTICHE', 26, 48, '#c9a24a');
   const rows = [['Livello', S.lvl], ['PV', `${S.hp} / ${S.maxhp}`], ['Forza', S.str], ['Difesa', S.def], ['Fortuna', S.luck], ['Esperienza', `${S.xp} / ${xpNeed(S.lvl)}`], ['Pozioni', `${S.potions} / ${S.maxPot}`], ['Emblemi', `${S.sigils} / 5`], ['Nemici sconfitti', S.kills], ['Esplorazione', Math.round(Object.keys(S.visited).length / ROOM_DEFS.length * 100) + '%'], ['Tempo', fmtTime(S.time)]];
@@ -219,7 +219,7 @@ function drawTitle() {
   });
   if (opts.length > 1 && opts[titleSel] === 'Nuova partita') text('Il salvataggio esistente verrà sovrascritto', W / 2, 140 + opts.length * 16 + 2, '#8a4a5a', 'center');
   text('Frecce muovi · Z salta · X colpisci · C scatto · Q/E arma · F pozione · M mappa', W / 2, 222, '#6a6078', 'center');
-  text(getPad() ? 'Controller collegato: configuralo dal Diario (Invio / Start)' : 'Controller supportato: collegalo e premi un pulsante', W / 2, 256, getPad() ? '#8ad08a' : '#6a6078', 'center');
+  text(getPad() ? 'Controller collegato: configuralo dal Diario (Invio / +)' : 'Controller supportato: collegalo e premi un pulsante', W / 2, 256, getPad() ? '#8ad08a' : '#6a6078', 'center');
   text('Invio, Spazio o tocca lo schermo per iniziare', W / 2, 242, '#8a8098', 'center');
 }
 

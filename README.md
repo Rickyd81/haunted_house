@@ -25,7 +25,7 @@ Su telefono e tablet compaiono i comandi touch.
 
 ### Controller
 
-Collega un controller (Xbox, PlayStation o compatibile) e premi un pulsante: viene riconosciuto subito. Predefiniti: A salta, X attacca, B scatto, Y pozione, LB/RB cambia arma, View mappa, Menu diario. Ci si muove con la croce direzionale o la levetta sinistra.
+Collega un controller (riferimento: Nintendo Switch Pro Controller; funzionano anche Xbox, PlayStation e compatibili) e premi un pulsante: viene riconosciuto subito. Predefiniti con i nomi dello Switch Pro: **B** salta, **Y** attacca, **A** scatto, **X** pozione, **L/R** cambia arma, **−** mappa, **+** diario. I pulsanti sono letti per posizione, quindi su altri controller valgono quelli nella stessa posizione (es. B dello Switch = A dell'Xbox). Ci si muove con la croce direzionale o la levetta sinistra.
 
 Per cambiare i tasti apri il Diario (Invio o Start), passa alla scheda **Controller** con sinistra/destra, scegli l'azione e premi il nuovo pulsante. La configurazione resta salvata nel browser.
 
