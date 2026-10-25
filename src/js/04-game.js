@@ -252,7 +252,7 @@ function spawnEnemies() {
   const ar = AREAS[def.a];
   if (!ar.enemies.length) return;
   const lvl = ar.base + Object.keys(S.bosses).length;
-  const pool = S.bosses[1] ? [...ar.enemies, 'mummy', 'mummy'] : ar.enemies;
+  const pool = [...ar.enemies, 'hand', ...(S.bosses[1] ? ['mummy', 'mummy'] : [])];
   const n = 2 + Math.floor(Math.random() * 2) + (ar.base >= 7 ? 1 : 0);
   for (let i = 0; i < n; i++) {
     let x, tries = 0;
@@ -276,7 +276,7 @@ function updateEnemy(e, dt) {
   }
   if (e.rise > 0) { e.rise -= dt; e.t = Math.min(e.t, 1.3); e.vy = Math.min(e.vy + 900 * dt, 400); moveEnt(e, dt); return; }
   const px = P.x + P.w / 2, py = P.y + P.h / 2, ex = e.x + e.w / 2, ey = e.y + e.h / 2, dx = px - ex, dy = py - ey, dist = Math.hypot(dx, dy) || 1;
-  if (e.type === 'skel' || e.type === 'zomb' || e.type === 'armor' || e.type === 'archer' || e.type === 'mummy') {
+  if (e.type === 'skel' || e.type === 'zomb' || e.type === 'armor' || e.type === 'archer' || e.type === 'mummy' || e.type === 'hand') {
     if (e.stun > 0) { e.vx *= .9; e.punch = 0; }
     else if (e.type === 'mummy' && e.punch > 0) { // pugno: carica e colpisce
       e.punch -= dt; e.vx = 0;
@@ -298,6 +298,10 @@ function updateEnemy(e, dt) {
       if (chase) e.face = Math.sign(dx) || e.face;
       const sp = e.spd * (chase ? 1.6 : 1);
       if (e.lunge > 0) e.lunge -= dt;
+      else if (e.type === 'hand' && e.fist > 0) { e.fist -= dt; if (e.onGround && e.fist < .45) e.fist = 0; }
+      else if (e.type === 'hand' && chase && e.onGround && Math.abs(dx) < 46 && e.t > 1) { // salta chiusa a pugno
+        e.fist = .6; e.t = 0; e.vy = -200; e.vx = e.face * 130; sfx.throw();
+      }
       else if (e.type === 'mummy' && chase && Math.abs(dx) < 26 && e.t > 1.1) { e.punch = .5; e.punched = false; e.t = 0; e.vx = 0; }
       else if ((e.type === 'armor' || e.type === 'zomb') && chase && Math.abs(dx) < 60 && e.t > 2.5) { e.vx = e.face * (e.type === 'armor' ? 170 : 110); e.t = 0; e.lunge = .35; }
       else e.vx = e.face * sp;
@@ -329,7 +333,7 @@ function updateEnemy(e, dt) {
     e.face = Math.sign(dx) || 1;
   }
   if (e.fly) { e.x = clamp(e.x, 16, W - 16 - e.w); e.y = clamp(e.y, 16, 238 - e.h); }
-  if (overlap(e, P) && e.st !== 'hang') hurtPlayer(e.atk, Math.sign(px - ex) || 1);
+  if (overlap(e, P) && e.st !== 'hang') hurtPlayer(e.atk * (e.fist > 0 ? 1.6 : 1), Math.sign(px - ex) || 1);
 }
 
 // ----- Proiettili -----

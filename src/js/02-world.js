@@ -118,6 +118,8 @@ const EN = {
   // Mummia: compare dopo la sconfitta del primo custode. Attacca a pugni; quando cade,
   // si affloscia a terra e dopo un secondo ne rinasce uno scheletro che lancia ossa.
   mummy: { hp: 30, atk: 8, w: 12, h: 24, spd: 24, xp: 9 },
+  // Mano strisciante (dal disegno di Riccardo): piccolissima e veloce, salta addosso chiusa a pugno
+  hand: { hp: 7, atk: 4, w: 10, h: 8, spd: 58, xp: 3 },
 };
 
 const BOSSES = {

@@ -102,6 +102,7 @@ function drawEnemy(e) {
   if (e.rise > 0) { ctx.globalAlpha = 1 - e.rise / .6; ctx.translate(0, Math.round(e.rise * 18)); }
   switch (e.type) {
     case 'mummy': drawMummy(e, s); break;
+    case 'hand': drawHand(e); break;
     case 'skel': case 'archer':
       R(-4, 0, 8, 7, B); R(-3, 7, 6, 1, D); R(-3, 2, 2, 2, K); R(1, 2, 2, 2, K); R(2, 2, 1, 1, '#ff3a3a'); R(0, 5, 1, 1, K);
       R(-1, 8, 2, 7, B); R(-3, 9, 6, 1, B); R(-3, 11, 6, 1, B); R(-2, 13, 4, 1, B); R(-3, 15, 6, 2, D);
@@ -145,6 +146,28 @@ function drawEnemy(e) {
     }
   }
   ctx.restore(); FL = false;
+}
+
+// Mano strisciante (dal disegno di Riccardo): pelle rosata, contorno nero, dita aperte
+function drawHand(e) {
+  const K = '#1a1010', SK = '#d98070', SL = '#eca898', ST = '#7a1a1a';
+  ctx.translate(0, e.h); ctx.scale(1.25, 1.25); ctx.translate(0, -8);
+  if (e.fist > 0) { // pugno chiuso in volo
+    R(-4, 0, 9, 8, K); R(-3, 1, 7, 6, SK); R(-3, 1, 7, 1, SL);
+    R(-2, 3, 1, 3, '#a05848'); R(0, 3, 1, 3, '#a05848'); R(2, 3, 1, 3, '#a05848');
+    R(4, 4, 2, 3, K); R(-6, 2, 2, 4, K); R(-6, 3, 1, 2, ST);
+    return;
+  }
+  const f = Math.abs(e.vx) > 5 ? Math.floor(e.t * 14) % 2 : 0;
+  // polso tagliato dietro
+  R(-7, 1, 3, 4, K); R(-7, 2, 1, 2, ST);
+  // dita come zampette che camminano
+  [[-4, f], [-1, -f], [2, f]].forEach(([x, o]) => { R(x + o, 4, 3, 4, K); R(x + o + 1, 4, 1, 3, SK); });
+  // palmo
+  R(-5, 0, 10, 6, K); R(-4, 1, 8, 4, SK); R(-4, 1, 3, 1, SL);
+  // pollice e indice in avanti, aperti come nel disegno
+  R(4, -2, 3, 4, K); R(5, -1, 1, 2, SK);
+  R(5, 3, 4, 3, K); R(6, 4, 2, 1, SK);
 }
 
 // Mummia (dal disegno di Riccardo): bende chiare a righe diagonali, occhi arancioni, braccia scure

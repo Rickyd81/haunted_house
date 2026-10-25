@@ -35,6 +35,7 @@ Per cambiare i tasti apri il Diario (Invio o Start), passa alla scheda **Control
 - **Boss**: Ossian il Maggiordomo Scheletrico, Morwen la Strega dei Libri, Gorvath il Ghoul dell'Ossario, Isolde la Sposa Spettrale, Sir Aldric il Cavaliere Decaduto, e il Conte Malachia (finale, a due fasi).
 - **Armi**: Spada, Ascia, Lancia, Balestra, Catena, Falce, Martello Consacrato, Lama del Crepuscolo.
 - **Mummia** (disegnata da Riccardo): compare dopo la sconfitta del primo custode, attacca a pugni e quando cade si affloscia a terra; dopo un secondo ne rinasce uno scheletro che lancia ossa.
+- **Mano strisciante** (disegnata da Riccardo): piccolissima e veloce, cammina sulle dita e ti salta addosso chiusa a pugno. Si trova in tutte le aree.
 - **Cane compagno** (disegnato da Riccardo): te lo affidano all'inizio, ti segue ovunque, salta sulle travi, abbaia quando sente un nemico e non combatte. Si può lasciare a casa dal Diario, scheda Opzioni.
 - **GDR**: livelli con aumento di PV, Forza, Difesa e Fortuna; colpi critici; i nemici crescono di livello a ogni custode sconfitto.
 - **Esplorazione**: muri fragili che nascondono 6 stanze segrete, barriere spettrali, cancelli che si aprono con gli Emblemi, altari che curano e salvano (salvataggio nel browser).

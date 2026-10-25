@@ -239,6 +239,8 @@ const EN = {
   // Mummia: compare dopo la sconfitta del primo custode. Attacca a pugni; quando cade,
   // si affloscia a terra e dopo un secondo ne rinasce uno scheletro che lancia ossa.
   mummy: { hp: 30, atk: 8, w: 12, h: 24, spd: 24, xp: 9 },
+  // Mano strisciante (dal disegno di Riccardo): piccolissima e veloce, salta addosso chiusa a pugno
+  hand: { hp: 7, atk: 4, w: 10, h: 8, spd: 58, xp: 3 },
 };
 
 const BOSSES = {
@@ -702,7 +704,7 @@ function spawnEnemies() {
   const ar = AREAS[def.a];
   if (!ar.enemies.length) return;
   const lvl = ar.base + Object.keys(S.bosses).length;
-  const pool = S.bosses[1] ? [...ar.enemies, 'mummy', 'mummy'] : ar.enemies;
+  const pool = [...ar.enemies, 'hand', ...(S.bosses[1] ? ['mummy', 'mummy'] : [])];
   const n = 2 + Math.floor(Math.random() * 2) + (ar.base >= 7 ? 1 : 0);
   for (let i = 0; i < n; i++) {
     let x, tries = 0;
@@ -726,7 +728,7 @@ function updateEnemy(e, dt) {
   }
   if (e.rise > 0) { e.rise -= dt; e.t = Math.min(e.t, 1.3); e.vy = Math.min(e.vy + 900 * dt, 400); moveEnt(e, dt); return; }
   const px = P.x + P.w / 2, py = P.y + P.h / 2, ex = e.x + e.w / 2, ey = e.y + e.h / 2, dx = px - ex, dy = py - ey, dist = Math.hypot(dx, dy) || 1;
-  if (e.type === 'skel' || e.type === 'zomb' || e.type === 'armor' || e.type === 'archer' || e.type === 'mummy') {
+  if (e.type === 'skel' || e.type === 'zomb' || e.type === 'armor' || e.type === 'archer' || e.type === 'mummy' || e.type === 'hand') {
     if (e.stun > 0) { e.vx *= .9; e.punch = 0; }
     else if (e.type === 'mummy' && e.punch > 0) { // pugno: carica e colpisce
       e.punch -= dt; e.vx = 0;
@@ -748,6 +750,10 @@ function updateEnemy(e, dt) {
       if (chase) e.face = Math.sign(dx) || e.face;
       const sp = e.spd * (chase ? 1.6 : 1);
       if (e.lunge > 0) e.lunge -= dt;
+      else if (e.type === 'hand' && e.fist > 0) { e.fist -= dt; if (e.onGround && e.fist < .45) e.fist = 0; }
+      else if (e.type === 'hand' && chase && e.onGround && Math.abs(dx) < 46 && e.t > 1) { // salta chiusa a pugno
+        e.fist = .6; e.t = 0; e.vy = -200; e.vx = e.face * 130; sfx.throw();
+      }
       else if (e.type === 'mummy' && chase && Math.abs(dx) < 26 && e.t > 1.1) { e.punch = .5; e.punched = false; e.t = 0; e.vx = 0; }
       else if ((e.type === 'armor' || e.type === 'zomb') && chase && Math.abs(dx) < 60 && e.t > 2.5) { e.vx = e.face * (e.type === 'armor' ? 170 : 110); e.t = 0; e.lunge = .35; }
       else e.vx = e.face * sp;
@@ -779,7 +785,7 @@ function updateEnemy(e, dt) {
     e.face = Math.sign(dx) || 1;
   }
   if (e.fly) { e.x = clamp(e.x, 16, W - 16 - e.w); e.y = clamp(e.y, 16, 238 - e.h); }
-  if (overlap(e, P) && e.st !== 'hang') hurtPlayer(e.atk, Math.sign(px - ex) || 1);
+  if (overlap(e, P) && e.st !== 'hang') hurtPlayer(e.atk * (e.fist > 0 ? 1.6 : 1), Math.sign(px - ex) || 1);
 }
 
 // ----- Proiettili -----
@@ -1474,6 +1480,7 @@ function drawEnemy(e) {
   if (e.rise > 0) { ctx.globalAlpha = 1 - e.rise / .6; ctx.translate(0, Math.round(e.rise * 18)); }
   switch (e.type) {
     case 'mummy': drawMummy(e, s); break;
+    case 'hand': drawHand(e); break;
     case 'skel': case 'archer':
       R(-4, 0, 8, 7, B); R(-3, 7, 6, 1, D); R(-3, 2, 2, 2, K); R(1, 2, 2, 2, K); R(2, 2, 1, 1, '#ff3a3a'); R(0, 5, 1, 1, K);
       R(-1, 8, 2, 7, B); R(-3, 9, 6, 1, B); R(-3, 11, 6, 1, B); R(-2, 13, 4, 1, B); R(-3, 15, 6, 2, D);
@@ -1517,6 +1524,28 @@ function drawEnemy(e) {
     }
   }
   ctx.restore(); FL = false;
+}
+
+// Mano strisciante (dal disegno di Riccardo): pelle rosata, contorno nero, dita aperte
+function drawHand(e) {
+  const K = '#1a1010', SK = '#d98070', SL = '#eca898', ST = '#7a1a1a';
+  ctx.translate(0, e.h); ctx.scale(1.25, 1.25); ctx.translate(0, -8);
+  if (e.fist > 0) { // pugno chiuso in volo
+    R(-4, 0, 9, 8, K); R(-3, 1, 7, 6, SK); R(-3, 1, 7, 1, SL);
+    R(-2, 3, 1, 3, '#a05848'); R(0, 3, 1, 3, '#a05848'); R(2, 3, 1, 3, '#a05848');
+    R(4, 4, 2, 3, K); R(-6, 2, 2, 4, K); R(-6, 3, 1, 2, ST);
+    return;
+  }
+  const f = Math.abs(e.vx) > 5 ? Math.floor(e.t * 14) % 2 : 0;
+  // polso tagliato dietro
+  R(-7, 1, 3, 4, K); R(-7, 2, 1, 2, ST);
+  // dita come zampette che camminano
+  [[-4, f], [-1, -f], [2, f]].forEach(([x, o]) => { R(x + o, 4, 3, 4, K); R(x + o + 1, 4, 1, 3, SK); });
+  // palmo
+  R(-5, 0, 10, 6, K); R(-4, 1, 8, 4, SK); R(-4, 1, 3, 1, SL);
+  // pollice e indice in avanti, aperti come nel disegno
+  R(4, -2, 3, 4, K); R(5, -1, 1, 2, SK);
+  R(5, 3, 4, 3, K); R(6, 4, 2, 1, SK);
 }
 
 // Mummia (dal disegno di Riccardo): bende chiare a righe diagonali, occhi arancioni, braccia scure
