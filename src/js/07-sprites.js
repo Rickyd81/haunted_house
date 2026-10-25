@@ -150,11 +150,11 @@ function drawEnemy(e) {
 
 // Mano strisciante (dal disegno di Riccardo): pelle rosata, contorno nero, dita aperte
 function drawHand(e) {
-  const K = '#1a1010', SK = '#d98070', SL = '#eca898', ST = '#7a1a1a';
+  const K = '#2a1612', SK = '#f6b8a8', SL = '#ffe0d6', ST = '#a02a2a';
   ctx.translate(0, e.h); ctx.scale(1.25, 1.25); ctx.translate(0, -8);
   if (e.fist > 0) { // pugno chiuso in volo
     R(-4, 0, 9, 8, K); R(-3, 1, 7, 6, SK); R(-3, 1, 7, 1, SL);
-    R(-2, 3, 1, 3, '#a05848'); R(0, 3, 1, 3, '#a05848'); R(2, 3, 1, 3, '#a05848');
+    R(-2, 3, 1, 3, '#d08878'); R(0, 3, 1, 3, '#d08878'); R(2, 3, 1, 3, '#d08878');
     R(4, 4, 2, 3, K); R(-6, 2, 2, 4, K); R(-6, 3, 1, 2, ST);
     return;
   }

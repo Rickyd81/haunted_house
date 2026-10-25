@@ -26,6 +26,7 @@ function drawLighting() {
   for (const w of room.windows) light((w.x0 + w.x1) / 2, 100, 70, .5);
   for (const p of projs) if (p.kind !== 'bone' && p.kind !== 'rock' && p.kind !== 'shock') light(p.x + p.w / 2, p.y + p.h / 2, p.kind === 'pillar' ? 60 : 26, .8);
   for (const k of pickups) if (k.kind === 'item') light(k.x + 6, k.y + 7, 40, .8);
+  for (const e of enemies) if (e.type === 'hand' && !e.dead) light(e.x + e.w / 2, e.y + 4, 26, .75); // la mano resta ben visibile
   if (boss && boss.fly) light(boss.x + boss.w / 2, boss.y + boss.h / 2, 60, .5);
   ctx.drawImage(lc, 0, 0);
   // bagliore caldo delle candele
