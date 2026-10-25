@@ -17,7 +17,7 @@ const PAD_KEY = 'villa_morgrave_pad';
 let padMap = loadPadMap();
 let padPrev = [], padName = '', padIdx = -1, padHeld = [];
 let padWait = null;          // azione in attesa di un nuovo pulsante
-let pauseTab = 0, padSel = 0; // scheda del Diario: 0 diario, 1 controller
+let pauseTab = 0, padSel = 0; // scheda del Diario: 0 diario, 1 controller, 2 opzioni
 
 function loadPadMap() {
   try { const s = JSON.parse(localStorage.getItem(PAD_KEY) || 'null'); if (s) return Object.assign({}, PAD_DEFAULT, s); } catch (e) { }

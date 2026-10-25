@@ -15,6 +15,12 @@ function newGame() {
     'e spezza il sigillo del Santuario.',
     'Gli altari dalla fiamma blu curano e salvano.',
   ]);
+  showMsg('Un fedele compagno', [
+    'Prima di entrare, il vecchio custode del cancello',
+    'ti affida il suo cane: "Non combatte, ma non ti',
+    'lascerà mai solo. E abbaia se sente i morti."',
+    'Puoi lasciarlo a casa dal Diario, scheda Opzioni.',
+  ]);
 }
 function continueGame() {
   const s = loadSave(); if (!s) return newGame();
@@ -52,8 +58,9 @@ function update(dt) {
     case 'map': if (hit('map') || hit('pause')) state = 'play'; return;
     case 'pause': {
       if (padWait) { updatePadMenu(); return; }
-      if (hit('left') || hit('right')) { pauseTab = 1 - pauseTab; sfx.throw(); }
+      if (hit('left') || hit('right')) { pauseTab = (pauseTab + (hit('right') ? 1 : 2)) % 3; sfx.throw(); }
       else if (pauseTab === 1) updatePadMenu();
+      else if (pauseTab === 2) updateOptMenu();
       else {
         const list = WORDER.filter(k => S.weapons.includes(k));
         if (hit('up')) pauseSel = (pauseSel + list.length - 1) % list.length;
@@ -76,6 +83,7 @@ function update(dt) {
   const before = room;
   updatePlayer(dt);
   if (room !== before || state !== 'play') return;
+  updateDog(dt);
   for (const e of enemies.slice()) e.isBoss ? updateBoss(e, dt) : updateEnemy(e, dt);
   enemies = enemies.filter(e => !e.dead && e.y < H + 40 && e.x > -40 && e.x < W + 40);
   updateProjs(dt); updatePickups(dt); updateParticles(dt);
@@ -105,6 +113,7 @@ function draw() {
   drawRoomDynamic();
   for (const k of pickups) drawPickup(k);
   for (const e of enemies) drawEnemy(e);
+  drawDog();
   if (state !== 'dead') drawPlayer();
   for (const p of projs) drawProj(p);
   for (const p of parts) { ctx.globalAlpha = Math.max(0, Math.min(1, p.life / p.max * 1.5)); ctx.fillStyle = p.c; ctx.fillRect(Math.round(p.x), Math.round(p.y), p.s, p.s); }

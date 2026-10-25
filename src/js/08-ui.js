@@ -169,11 +169,12 @@ function fmtTime(s) { s = Math.floor(s); const h = Math.floor(s / 3600), m = Mat
 function drawPause() {
   ctx.fillStyle = 'rgba(6,3,10,.94)'; ctx.fillRect(0, 0, W, H);
   text('Il Diario del Cavaliere', W / 2, 6, '#e8d8b0', 'center', 22, DF);
-  ['Diario', 'Controller'].forEach((t, i) => {
-    const x = W / 2 + (i ? 8 : -8), on = pauseTab === i;
-    text((on ? '[ ' : '') + t + (on ? ' ]' : ''), x, 29, on ? '#ffd98a' : '#6a6078', i ? 'left' : 'right');
+  ['Diario', 'Controller', 'Opzioni'].forEach((t, i) => {
+    const x = W / 2 + (i - 1) * 110, on = pauseTab === i;
+    text((on ? '[ ' : '') + t + (on ? ' ]' : ''), x, 29, on ? '#ffd98a' : '#6a6078', 'center');
   });
   if (pauseTab === 1) { drawPadMenu(); text('Invio / Esc / + riprendi', W / 2, 250, '#6a6078', 'center'); return; }
+  if (pauseTab === 2) { drawOptMenu(); text('Invio / Esc / + riprendi', W / 2, 250, '#6a6078', 'center'); return; }
   panel(16, 40, 200, 168);
   text('STATISTICHE', 26, 48, '#c9a24a');
   const rows = [['Livello', S.lvl], ['PV', `${S.hp} / ${S.maxhp}`], ['Forza', S.str], ['Difesa', S.def], ['Fortuna', S.luck], ['Esperienza', `${S.xp} / ${xpNeed(S.lvl)}`], ['Pozioni', `${S.potions} / ${S.maxPot}`], ['Emblemi', `${S.sigils} / 5`], ['Nemici sconfitti', S.kills], ['Esplorazione', Math.round(Object.keys(S.visited).length / ROOM_DEFS.length * 100) + '%'], ['Tempo', fmtTime(S.time)]];

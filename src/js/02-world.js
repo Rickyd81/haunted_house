@@ -131,7 +131,7 @@ const BOSSES = {
 
 // ----- Salvataggio -----
 function newSave() {
-  return { lvl: 1, xp: 0, maxhp: 40, hp: 40, str: 6, def: 2, luck: 3, potions: 2, maxPot: 2, weapons: ['sword'], weapon: 'sword', dash: false, dj: false, sigils: 0, bosses: {}, items: {}, broken: {}, visited: {}, saveRoom: '4,3', time: 0, kills: 0, secrets: 0 };
+  return { lvl: 1, xp: 0, maxhp: 40, hp: 40, str: 6, def: 2, luck: 3, potions: 2, maxPot: 2, weapons: ['sword'], weapon: 'sword', dash: false, dj: false, sigils: 0, bosses: {}, items: {}, broken: {}, visited: {}, saveRoom: '4,3', time: 0, kills: 0, secrets: 0, dog: true };
 }
 let S = newSave();
 const SAVE_KEY = 'villa_morgrave_v1';

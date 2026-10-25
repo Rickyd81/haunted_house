@@ -406,6 +406,7 @@ function enterRoom(key) {
   if (def.boss && !S.bosses[def.boss]) startBoss(def.boss);
   else spawnEnemies();
   fade = 1;
+  placeDog();
 }
 function checkExit() {
   const cx = P.x + P.w / 2, cy = P.y + P.h / 2;
